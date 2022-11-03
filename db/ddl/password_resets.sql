@@ -1,0 +1,1 @@
+create table expressAuthApp.password_resets (email varchar(255) unique, token varchar(255), created_at DATETIME, updated_at DATETIME, PRIMARY KEY (email));
