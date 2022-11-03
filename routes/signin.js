@@ -8,45 +8,41 @@ const isNonEmptyString = (v) => {
 };
 
 router.get("/", function (req, res, next) {
-  res.render("signup", {
-    title: "Sign up",
+  res.render("signin", {
+    title: "Sign in",
   });
 });
 
 router.post("/", async function (req, res, next) {
-  const name = req.body.name;
   const email = req.body.email;
   const password = req.body.password;
-  const repassword = req.body.repassword;
 
   try {
     // バリデーション
     if (
-      isNonEmptyString(name) !== true &&
       isNonEmptyString(email) !== true &&
       isNonEmptyString(password) !== true
     ) {
       throw new Error("不正な値");
     }
-    if (password !== repassword) {
-      throw new Error("パスワードと確認パスワード不一致");
-    }
-
-    // パスワードをハッシュ化
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    // ユーザーをDBに登録
-    await User.create({
-      name: name,
-      email: email,
-      password: hashedPassword,
+    const result = await User.findOne({
+      attributes: ["password"],
+      where: {
+        email: email,
+      },
     });
 
-    res.redirect("/");
+    if (result.length === null) {
+      throw new Error("該当ユーザーなし");
+    } else if (await bcrypt.compare(password, result.password)) {
+      res.redirect("/");
+    } else {
+      throw new Error("パスワード不一致");
+    }
   } catch (error) {
-    console.error("ユーザー登録失敗", error);
-    res.render("signup", {
-      title: "Sign up",
+    console.error(error);
+    res.render("signin", {
+      title: "Sign in",
       errorMessage: [error.errorMessage],
     });
   }
