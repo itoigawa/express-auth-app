@@ -5,9 +5,9 @@ const User = dbConfig.define(
   "User",
   {
     id: {
-      type: Sequelize.INTEGER,
+      type: Sequelize.UUID,
+      defaultValue: Sequelize.UUIDV4,
       primaryKey: true,
-      autoIncrement: true,
     },
     name: {
       type: Sequelize.STRING,
