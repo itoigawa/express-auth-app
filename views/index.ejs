@@ -5,6 +5,9 @@
     <link rel="stylesheet" href="/stylesheets/style.css" />
   </head>
   <body>
+    <% if (isAuth) { %>
     <h1>認証OK</h1>
+    <h3>ユーザー名: <%= username %></h3>
+    <% } %>
   </body>
 </html>

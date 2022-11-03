@@ -8,12 +8,18 @@ const isNonEmptyString = (v) => {
 };
 
 router.get("/", function (req, res, next) {
+  const userId = req.session.userid;
+  const isAuth = Boolean(userId);
   res.render("signin", {
     title: "Sign in",
+    isAuth: isAuth,
   });
 });
 
 router.post("/", async function (req, res, next) {
+  const userId = req.session.userid;
+  const isAuth = Boolean(userId);
+
   const email = req.body.email;
   const password = req.body.password;
 
@@ -26,15 +32,18 @@ router.post("/", async function (req, res, next) {
       throw new Error("不正な値");
     }
     const result = await User.findOne({
-      attributes: ["password"],
+      attributes: ["id", "name", "password"],
       where: {
         email: email,
       },
     });
 
-    if (result.length === null) {
+    if (result === null) {
       throw new Error("該当ユーザーなし");
     } else if (await bcrypt.compare(password, result.password)) {
+      // セッション(Webサーバに保存するデータ)にidとnameを保存
+      req.session.userid = result.id;
+      req.session.username = result.name;
       res.redirect("/");
     } else {
       throw new Error("パスワード不一致");
@@ -44,6 +53,7 @@ router.post("/", async function (req, res, next) {
     res.render("signin", {
       title: "Sign in",
       errorMessage: [error.errorMessage],
+      isAuth: isAuth,
     });
   }
 });
