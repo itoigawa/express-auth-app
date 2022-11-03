@@ -2,18 +2,21 @@ const express = require("express");
 const router = express.Router();
 const User = require("../model/user");
 const bcrypt = require("bcrypt");
+const csrf = require("csurf");
+const csrfProtection = csrf({ cookie: false });
 
 const isNonEmptyString = (v) => {
   return typeof v === "string" && v.length > 0;
 };
 
-router.get("/", function (req, res, next) {
+router.get("/", csrfProtection, function (req, res, next) {
   res.render("signup", {
     title: "Sign up",
+    csrfToken: req.csrfToken(),
   });
 });
 
-router.post("/", async function (req, res, next) {
+router.post("/", csrfProtection, async function (req, res, next) {
   const name = req.body.name;
   const email = req.body.email;
   const password = req.body.password;
@@ -42,7 +45,7 @@ router.post("/", async function (req, res, next) {
       password: hashedPassword,
     });
 
-    res.redirect("/");
+    res.redirect("/signin");
   } catch (error) {
     console.error("ユーザー登録失敗", error);
     res.render("signup", {
