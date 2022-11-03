@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const User = require("../model/user");
 const bcrypt = require("bcrypt");
+
 const isNonEmptyString = (v) => {
   return typeof v === "string" && v.length > 0;
 };
@@ -46,7 +47,7 @@ router.post("/", async function (req, res, next) {
     console.error("ユーザー登録失敗", error);
     res.render("signup", {
       title: "Sign up",
-      errorMessage: [error.sqlMessage],
+      errorMessage: [error.errorMessage],
     });
   }
 });
