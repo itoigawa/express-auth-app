@@ -11,7 +11,6 @@ const PasswordReset = dbConfig.define(
     },
     token: {
       type: Sequelize.UUID,
-      defaultValue: Sequelize.UUIDV4,
     },
   },
   {

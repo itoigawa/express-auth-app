@@ -4,6 +4,9 @@ const { v4: uuidv4 } = require("uuid");
 const User = require("../model/User");
 const PasswordReset = require("../model/PasswordReset");
 
+const sgMail = require("@sendgrid/mail");
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+
 const isNonEmptyString = (v) => {
   return typeof v === "string" && v.length > 0;
 };
@@ -51,11 +54,30 @@ router.post("/", async function (req, res, next) {
           throw new Error("トークン更新失敗");
         }
       }
+
+      const passwordResetUrl =
+        "http://localhost:3000/password/setting/" +
+        passwordReset.token +
+        +"?email=" +
+        email;
+      //メール情報の作成
+      const msg = {
+        to: email,
+        from: "itoigawakota@gmail.com",
+        subject: "【ログイン認証システム】パスワード再発行メール",
+        text:
+          "以下のURLをクリックしてパスワードを再発行してください。\n\n" +
+          passwordResetUrl,
+        html: `<h3>以下のURLをクリックしてパスワードを再発行してください。</h3>
+			  		${passwordResetUrl}`,
+      };
+      sgMail.send(msg);
+      res.redirect("/signin");
     }
   } catch (error) {
     console.error(error);
-    res.render("signin", {
-      title: "Sign in",
+    res.render("passwordReset", {
+      title: "Password reset",
       errorMessage: [error.errorMessage],
       isAuth: isAuth,
     });
