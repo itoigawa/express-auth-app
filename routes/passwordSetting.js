@@ -9,14 +9,13 @@ const isNonEmptyString = (v) => {
 };
 
 const now = new Date();
-const before30min_unix = now.getTime() - 1800000; //ミリ秒なので(900秒*1000)
+const before30min_unix = now.getTime() - 1800000; //ミリ秒なので(1800秒(30分)*1000)
 const before30min = new Date(before30min_unix);
 
 router.get("/", async function (req, res, next) {
   const userId = req.session.userid;
   const isAuth = Boolean(userId);
   const tokenAndEmail = req.originalUrl.split("/password/setting/")[1];
-
   const [token, email] = tokenAndEmail.split("?email=");
 
   try {
@@ -60,18 +59,18 @@ router.post("/", async function (req, res, next) {
   try {
     if (password !== repassword)
       throw new Error("パスワードと確認パスワード不一致");
-    if (password)
-      if (
-        isNonEmptyString(email) !== true ||
-        isNonEmptyString(password) !== true
-      ) {
-        // バリデーション
-        throw new Error("不正な値");
-      }
+
+    if (
+      isNonEmptyString(email) !== true ||
+      isNonEmptyString(password) !== true
+    ) {
+      // バリデーション
+      throw new Error("不正な値");
+    }
     // パスワードをハッシュ化
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const [user] = await User.upsert({
+    const [user, isCreated] = await User.upsert({
       email: email,
       password: hashedPassword,
     });
