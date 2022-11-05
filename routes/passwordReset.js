@@ -55,21 +55,21 @@ router.post("/", async function (req, res, next) {
         }
       }
 
-      const passwordResetUrl =
+      const passwordSettingUrl =
         "http://localhost:3000/password/setting/" +
         passwordReset.token +
-        +"?email=" +
-        email;
+        "?email=" +
+        encodeURIComponent(email);
       //メール情報の作成
       const msg = {
         to: email,
         from: "itoigawakota@gmail.com",
         subject: "【ログイン認証システム】パスワード再発行メール",
         text:
-          "以下のURLをクリックしてパスワードを再発行してください。\n\n" +
-          passwordResetUrl,
-        html: `<h3>以下のURLをクリックしてパスワードを再発行してください。</h3>
-			  		${passwordResetUrl}`,
+          "30分以内に下記のURLをクリックしてパスワードを再発行してください。\n\n" +
+          passwordSettingUrl,
+        html: `<h3>30分以内に下記のURLをクリックしてパスワードを再発行してください。</h3>
+        		${passwordSettingUrl}`,
       };
       sgMail.send(msg);
       res.redirect("/signin");
