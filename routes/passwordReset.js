@@ -47,6 +47,7 @@ router.post("/", async function (req, res, next) {
         email: email,
         token: uuidv4(),
       });
+
       if (passwordReset.token?.length !== 36) {
         if (isCreated) {
           throw new Error("トークン作成失敗");
@@ -60,6 +61,7 @@ router.post("/", async function (req, res, next) {
         passwordReset.token +
         "?email=" +
         encodeURIComponent(email);
+
       //メール情報の作成
       const msg = {
         to: email,
@@ -71,7 +73,9 @@ router.post("/", async function (req, res, next) {
         html: `<h3>30分以内に下記のURLをクリックしてパスワードを再発行してください。</h3>
         		${passwordSettingUrl}`,
       };
-      sgMail.send(msg);
+      // メール送信
+      await sgMail.send(msg);
+
       res.redirect("/signin");
     }
   } catch (error) {
