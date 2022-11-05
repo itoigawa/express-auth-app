@@ -20,4 +20,6 @@ router.get("/", function (req, res, next) {
 router.use("/signup", require("./signup"));
 router.use("/signin", require("./signin"));
 router.use("/logout", require("./logout"));
+router.use("/password/reset", require("./passwordReset"));
+router.use("/password/setting/:tokenAndEmail", require("./passwordSetting"));
 module.exports = router;

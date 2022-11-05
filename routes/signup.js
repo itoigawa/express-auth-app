@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const User = require("../model/user");
+const User = require("../model/User");
 const bcrypt = require("bcrypt");
 const csrf = require("csurf");
 const csrfProtection = csrf({ cookie: false });
@@ -31,10 +31,8 @@ router.post("/", csrfProtection, async function (req, res, next) {
     ) {
       throw new Error("不正な値");
     }
-    if (password !== repassword) {
+    if (password !== repassword)
       throw new Error("パスワードと確認パスワード不一致");
-    }
-
     // パスワードをハッシュ化
     const hashedPassword = await bcrypt.hash(password, 10);
 
